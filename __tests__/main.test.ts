@@ -13,9 +13,6 @@ import path from 'path'
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
 
-// The module being tested should be imported dynamically. This ensures that the
-// mocks are used in place of any actual dependencies.
-
 describe('main.ts', () => {
   const env = process.env
   beforeEach(() => {
@@ -39,17 +36,18 @@ describe('main.ts', () => {
     jest.resetAllMocks()
   })
 
-  it('Sets the time output', async () => {
+  it('Able to generate valid map', async () => {
+    // Dynamically import the module to test to load the env variable.
     const { run } = await import('../src/main.js')
     expect(process.env['MAPS_API_KEY']?.length).toBeGreaterThan(0)
     await run()
 
-    // Verify the time output was set.
+    // Verify that the map
     const filePath = path.resolve('./dist/generated-map.png')
     expect(existsSync(filePath)).toBe(true)
   })
 
-  it('Sets a failed status', async () => {
+  it('Invalid zoom input', async () => {
     const { run } = await import('../src/main.js')
     // Clear the getInput mock and return an invalid value.
     expect(() => core.getInput('foo')).toThrow('Unexpected input: foo')

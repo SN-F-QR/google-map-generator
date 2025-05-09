@@ -25,6 +25,22 @@ const getMapStyles = () => {
   return JSON.parse(mapStyles) as MapStyle[]
 }
 
+const isValidPNG = (image: Buffer<ArrayBuffer>): boolean => {
+  const PNG_SIGNATURE = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a
+  ])
+
+  if (
+    image.length > PNG_SIGNATURE.length &&
+    image.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE) &&
+    image.length > 1000
+  ) {
+    return true
+  }
+
+  return false
+}
+
 /**
  * The main function for the action.
  *
@@ -68,6 +84,9 @@ export async function run(): Promise<void> {
     const fullUrl = `${baseUrl}${params.toString()}`
     const response = await fetch(fullUrl)
     const buffer = Buffer.from(await response.arrayBuffer())
+    if (!isValidPNG(buffer)) {
+      throw new Error('Invalid PNG image')
+    }
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
     fs.writeFileSync(outputPath, buffer)
   } catch (error) {
