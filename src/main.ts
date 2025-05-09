@@ -52,7 +52,7 @@ export async function run(): Promise<void> {
     const mapStyles = getMapStyles()
 
     const outputPath = core.getInput('output')
-    const apiKey = process.env['MAPS_API_KEY'] ?? ''
+    const apiKey = core.getInput('google_static_map_api_key')
     const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?'
 
     const address = core.getInput('address')

@@ -9,6 +9,9 @@ branding:
 
 # Define your inputs here.
 inputs:
+  google_static_map_api_key:
+    description: the api key of google static map
+    required: true
   address:
     description:
       the detail address of the map center, see

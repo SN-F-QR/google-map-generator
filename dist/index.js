@@ -27255,6 +27255,17 @@ const getMapStyles = () => {
     const mapStyles = fs.readFileSync(mapStylesPath, 'utf8');
     return JSON.parse(mapStyles);
 };
+const isValidPNG = (image) => {
+    const PNG_SIGNATURE = Buffer.from([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a
+    ]);
+    if (image.length > PNG_SIGNATURE.length &&
+        image.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE) &&
+        image.length > 1000) {
+        return true;
+    }
+    return false;
+};
 /**
  * The main function for the action.
  *
@@ -27265,7 +27276,7 @@ async function run() {
         const styleTypes = ['visibility', 'saturation', 'lightness', 'gamma'];
         const mapStyles = getMapStyles();
         const outputPath = coreExports.getInput('output');
-        const apiKey = process.env['MAPS_API_KEY'] ?? '';
+        const apiKey = coreExports.getInput('google_static_map_api_key');
         const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?';
         const address = coreExports.getInput('address');
         const zoom = parseInt(coreExports.getInput('zoom'));
@@ -27295,6 +27306,9 @@ async function run() {
         const fullUrl = `${baseUrl}${params.toString()}`;
         const response = await fetch(fullUrl);
         const buffer = Buffer.from(await response.arrayBuffer());
+        if (!isValidPNG(buffer)) {
+            throw new Error('Invalid PNG image');
+        }
         fs.mkdirSync(require$$1$4.dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, buffer);
     }

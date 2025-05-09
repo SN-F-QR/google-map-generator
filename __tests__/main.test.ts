@@ -25,6 +25,11 @@ describe('main.ts', () => {
         return '8'
       } else if (arg === 'output') {
         return './dist/generated-map.png'
+      } else if (
+        arg === 'google_static_map_api_key' &&
+        process.env.MAPS_API_KEY
+      ) {
+        return process.env.MAPS_API_KEY
       } else {
         throw new Error(`Unexpected input: ${arg}`)
       }
@@ -58,5 +63,25 @@ describe('main.ts', () => {
       1,
       'Invalid zoom level, must be a number'
     )
+  })
+
+  it('Invalid api key', async () => {
+    const { run } = await import('../src/main.js')
+    // Clear the getInput mock
+    core.getInput.mockClear().mockImplementation((arg: string) => {
+      const keys = ['address', 'zoom', 'output', 'google_static_map_api_key']
+      if (!keys.includes(arg)) {
+        throw new Error(`Unexpected input: ${arg}`)
+      }
+      const failedInputs = {
+        address: 'City Hall, New York',
+        zoom: '8',
+        output: './dist/generated-map.png',
+        google_static_map_api_key: '114514'
+      }
+      return failedInputs[arg as keyof typeof failedInputs]
+    })
+    await run()
+    expect(core.setFailed).toHaveBeenNthCalledWith(1, 'Invalid PNG image')
   })
 })

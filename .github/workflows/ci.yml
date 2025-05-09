@@ -57,10 +57,9 @@ jobs:
 
       - name: Test Local Action
         id: test-action
-        env:
-          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         uses: ./
         with:
+          google_static_map_api_key: ${{ secrets.MAPS_API_KEY }}
           address: 'Shinjuku, Tokyo'
           zoom: '8'
           output: 'dist/generated-map.png'
