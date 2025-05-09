@@ -60,7 +60,6 @@ export async function run(): Promise<void> {
     })
     params.append('key', apiKey)
     const fullUrl = `${baseUrl}${params.toString()}`
-    console.log(`Fetching map from: ${fullUrl}`)
     const response = await fetch(fullUrl)
     const buffer = Buffer.from(await response.arrayBuffer())
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })

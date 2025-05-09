@@ -27289,7 +27289,6 @@ async function run() {
         });
         params.append('key', apiKey);
         const fullUrl = `${baseUrl}${params.toString()}`;
-        console.log(`Fetching map from: ${fullUrl}`);
         const response = await fetch(fullUrl);
         const buffer = Buffer.from(await response.arrayBuffer());
         fs.mkdirSync(require$$1$4.dirname(outputPath), { recursive: true });

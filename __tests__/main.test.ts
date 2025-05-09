@@ -15,10 +15,11 @@ jest.unstable_mockModule('@actions/core', () => core)
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
-const { run } = await import('../src/main.js')
 
 describe('main.ts', () => {
+  const env = process.env
   beforeEach(() => {
+    jest.resetModules()
     // Set the action's inputs as return values from core.getInput().
     core.getInput.mockImplementation((arg: string) => {
       if (arg === 'address') {
@@ -31,6 +32,7 @@ describe('main.ts', () => {
         throw new Error(`Unexpected input: ${arg}`)
       }
     })
+    process.env = { ...env }
   })
 
   afterEach(() => {
@@ -38,14 +40,17 @@ describe('main.ts', () => {
   })
 
   it('Sets the time output', async () => {
+    const { run } = await import('../src/main.js')
+    expect(process.env['MAPS_API_KEY']?.length).toBeGreaterThan(0)
     await run()
 
     // Verify the time output was set.
-    const filePath = path.resolve('./dist/generated-maps.png')
+    const filePath = path.resolve('./dist/generated-map.png')
     expect(existsSync(filePath)).toBe(true)
   })
 
   it('Sets a failed status', async () => {
+    const { run } = await import('../src/main.js')
     // Clear the getInput mock and return an invalid value.
     expect(() => core.getInput('foo')).toThrow('Unexpected input: foo')
     core.getInput.mockClear().mockReturnValue('invalid')
