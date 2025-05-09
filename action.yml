@@ -1,6 +1,6 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: google-map-generator
+description: generate a google map image to dist
+author: SN-F-QR
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -9,15 +9,19 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  address:
+    description:
+      the detail address of the map center, see
+      https://developers.google.com/maps/documentation/maps-static/start#Addresses
     required: true
-    default: '1000'
+    default: 'Shinjuku, Tokyo'
+  zoom:
+    description: the zoom of the map
+    required: true
+    default: '8'
 
 # Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
 
 runs:
   using: node20

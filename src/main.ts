@@ -1,5 +1,23 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
+import fs from 'fs'
+import path from 'path'
+
+type MapStyle = {
+  featureType: string
+  elementType: string
+  stylers: {
+    visibility?: string
+    saturation?: string
+    lightness?: string
+    gamma?: string
+  }[]
+}
+
+const getMapStyles = () => {
+  const mapStylesPath = path.resolve('./src/map-style.json')
+  const mapStyles = fs.readFileSync(mapStylesPath, 'utf8')
+  return JSON.parse(mapStyles) as MapStyle[]
+}
 
 /**
  * The main function for the action.
@@ -8,20 +26,53 @@ import { wait } from './wait.js'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const styleTypes = ['visibility', 'saturation', 'lightness', 'gamma']
+    const mapStyles = getMapStyles()
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const fileName = 'dist/generated-maps.png'
+    const apiKey = process.env['MAPS_API_KEY'] ?? ''
+    const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?'
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const address = core.getInput('address')
+    const zoom = parseInt(core.getInput('zoom'))
+    if (isNaN(zoom)) {
+      throw new Error('Invalid zoom level, must be a number')
+    }
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    const params = new URLSearchParams()
+    params.append('center', address)
+    params.append('zoom', `${zoom}`)
+    // Highest quality
+    params.append('size', '640x640')
+    params.append('scale', '2')
+    mapStyles.forEach((style) => {
+      let styleString = `feature:${style.featureType}|element:${style.elementType}|`
+      styleString += style.stylers
+        .map((styler) => {
+          const keys = Object.keys(styler)
+          if (keys.length > 0 && styleTypes.includes(keys[0])) {
+            return `${keys[0]}:${styler[keys[0] as keyof typeof styler]}`
+          }
+          throw new TypeError('Invalid style object')
+        })
+        .join('|')
+      params.append('style', styleString)
+    })
+    params.append('key', apiKey)
+    const fullUrl = `${baseUrl}${params.toString()}`
+    console.log(`Fetching map from: ${fullUrl}`)
+    const response = await fetch(fullUrl)
+    const buffer = Buffer.from(await response.arrayBuffer())
+    fs.mkdirSync(path.dirname(fileName), { recursive: true })
+    fs.writeFileSync(fileName, buffer)
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    } else if (error instanceof TypeError) {
+      core.setFailed(
+        `TypeError: ${error.message}, you may have provided an invalid property in stylers, check the 'map-style.json.'`
+      )
+    }
   }
 }
