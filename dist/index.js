@@ -1,7 +1,8 @@
+import require$$1$3, { fileURLToPath } from 'url';
+import require$$1$4, { dirname } from 'path';
 import require$$0 from 'os';
 import require$$0$1 from 'crypto';
 import fs from 'fs';
-import require$$1$4 from 'path';
 import require$$2 from 'http';
 import require$$3 from 'https';
 import require$$0$4 from 'net';
@@ -21,7 +22,6 @@ import require$$2$1 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$2 from 'console';
-import require$$1$3 from 'url';
 import require$$3$1 from 'zlib';
 import require$$6 from 'string_decoder';
 import require$$0$9 from 'diagnostics_channel';
@@ -27247,7 +27247,11 @@ function requireCore () {
 var coreExports = requireCore();
 
 const getMapStyles = () => {
-    const mapStylesPath = require$$1$4.resolve('./src/map-style.json');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    console.log('dir path:', __dirname);
+    const mapStylesPath = require$$1$4.resolve(__dirname, './map-style.json');
+    console.log('Map styles path:', mapStylesPath);
     const mapStyles = fs.readFileSync(mapStylesPath, 'utf8');
     return JSON.parse(mapStyles);
 };

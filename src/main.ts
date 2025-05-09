@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 import * as core from '@actions/core'
 import fs from 'fs'
 import path from 'path'
@@ -14,7 +16,11 @@ type MapStyle = {
 }
 
 const getMapStyles = () => {
-  const mapStylesPath = path.resolve('./src/map-style.json')
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = dirname(__filename)
+  console.log('dir path:', __dirname)
+  const mapStylesPath = path.resolve(__dirname, './map-style.json')
+  console.log('Map styles path:', mapStylesPath)
   const mapStyles = fs.readFileSync(mapStylesPath, 'utf8')
   return JSON.parse(mapStyles) as MapStyle[]
 }
