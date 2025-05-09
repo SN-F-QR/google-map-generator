@@ -7,11 +7,11 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import { existsSync } from 'fs'
+import path from 'path'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
@@ -20,10 +20,15 @@ const { run } = await import('../src/main.js')
 describe('main.ts', () => {
   beforeEach(() => {
     // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
-
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
+    core.getInput.mockImplementation((arg: string) => {
+      if (arg === 'address') {
+        return 'City Hall, New York'
+      } else if (arg === 'zoom') {
+        return '8'
+      } else {
+        throw new Error(`Unexpected input: ${arg}`)
+      }
+    })
   })
 
   afterEach(() => {
@@ -34,29 +39,19 @@ describe('main.ts', () => {
     await run()
 
     // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
-    )
+    const filePath = path.resolve('./dist/generated-maps.png')
+    expect(existsSync(filePath)).toBe(true)
   })
 
   it('Sets a failed status', async () => {
     // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
-
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
-
+    expect(() => core.getInput('foo')).toThrow('Unexpected input: foo')
+    core.getInput.mockClear().mockReturnValue('invalid')
     await run()
 
-    // Verify that the action was marked as failed.
     expect(core.setFailed).toHaveBeenNthCalledWith(
       1,
-      'milliseconds is not a number'
+      'Invalid zoom level, must be a number'
     )
   })
 })

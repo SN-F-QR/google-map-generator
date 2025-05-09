@@ -55,9 +55,12 @@ jobs:
 
       - name: Test Local Action
         id: test-action
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         uses: ./
         with:
-          milliseconds: 2000
+          address: 'Shinjuku, Tokyo'
+          zoom: '8'
 
       - name: Print Output
         id: output
