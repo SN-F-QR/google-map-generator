@@ -25,6 +25,8 @@ describe('main.ts', () => {
         return 'City Hall, New York'
       } else if (arg === 'zoom') {
         return '8'
+      } else if (arg === 'output') {
+        return './dist/generated-map.png'
       } else {
         throw new Error(`Unexpected input: ${arg}`)
       }

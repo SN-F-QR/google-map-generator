@@ -29,7 +29,7 @@ export async function run(): Promise<void> {
     const styleTypes = ['visibility', 'saturation', 'lightness', 'gamma']
     const mapStyles = getMapStyles()
 
-    const fileName = 'dist/generated-maps.png'
+    const outputPath = core.getInput('output')
     const apiKey = process.env['MAPS_API_KEY'] ?? ''
     const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?'
 
@@ -63,8 +63,8 @@ export async function run(): Promise<void> {
     console.log(`Fetching map from: ${fullUrl}`)
     const response = await fetch(fullUrl)
     const buffer = Buffer.from(await response.arrayBuffer())
-    fs.mkdirSync(path.dirname(fileName), { recursive: true })
-    fs.writeFileSync(fileName, buffer)
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, buffer)
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) {
