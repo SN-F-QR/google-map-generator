@@ -61,7 +61,3 @@ jobs:
         with:
           address: 'Shinjuku, Tokyo'
           zoom: '8'
-
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
