@@ -19,7 +19,9 @@ inputs:
     required: true
     default: 'Shinjuku, Tokyo'
   zoom:
-    description: the zoom of the map
+    description:
+      the zoom level of the map. Typically ranges from 0 (world view) to 20+
+      (building level).
     required: true
     default: '8'
   output:

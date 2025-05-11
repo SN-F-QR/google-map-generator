@@ -102,4 +102,4 @@ __tests__/runner/*
 *.code-workspace
 
 # Output Images
-*.png
+/dist/*.png
