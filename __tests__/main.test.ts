@@ -28,9 +28,9 @@ describe('main.ts', () => {
         return './dist/generated-map.png'
       } else if (
         arg === 'google_static_map_api_key' &&
-        process.env.INPUT_GOOGLE_STATIC_MAP_API_KEY
+        process.env.MAPS_API_KEY
       ) {
-        return process.env.INPUT_GOOGLE_STATIC_MAP_API_KEY
+        return process.env.MAPS_API_KEY
       } else {
         throw new Error(`Unexpected input: ${arg}`)
       }
