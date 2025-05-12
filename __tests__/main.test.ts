@@ -8,6 +8,7 @@
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
 import { existsSync } from 'fs'
+import { verifyJSON } from '../src/main'
 import path from 'path'
 
 // Mocks should be declared before the module being tested is imported.
@@ -27,9 +28,9 @@ describe('main.ts', () => {
         return './dist/generated-map.png'
       } else if (
         arg === 'google_static_map_api_key' &&
-        process.env.MAPS_API_KEY
+        process.env.INPUT_GOOGLE_STATIC_MAP_API_KEY
       ) {
-        return process.env.MAPS_API_KEY
+        return process.env.INPUT_GOOGLE_STATIC_MAP_API_KEY
       } else {
         throw new Error(`Unexpected input: ${arg}`)
       }
@@ -44,7 +45,6 @@ describe('main.ts', () => {
   it('Able to generate valid map', async () => {
     // Dynamically import the module to test to load the env variable.
     const { run } = await import('../src/main.js')
-    expect(process.env['MAPS_API_KEY']?.length).toBeGreaterThan(0)
     await run()
 
     // Verify that the map
@@ -83,5 +83,46 @@ describe('main.ts', () => {
     })
     await run()
     expect(core.setFailed).toHaveBeenNthCalledWith(1, 'Invalid PNG image')
+  })
+})
+
+describe('verifyJSON Function Tests', () => {
+  it('Invalid Style config', async () => {
+    const failedJSON = `{
+        "featureType": "all",
+        "elementType": "labels",
+        "stylers": [
+          {
+            "visibility": "okk"
+          }
+        ]}`
+    const failedObject = JSON.parse(failedJSON)
+    expect(() => verifyJSON(failedObject)).toThrow('Invalid visibility value')
+  })
+
+  it('Invalid Style format', async () => {
+    const failedJSON = `{
+        "featureType": "all",
+        "elementType": "labels",
+        "stylers":
+          {
+            "visibility": "on"
+          }
+        }`
+    const failedObject = JSON.parse(failedJSON)
+    expect(() => verifyJSON(failedObject)).toThrow('Invalid stylers')
+  })
+
+  it('Invalid JSON property', async () => {
+    const failedJSON = `{
+        "mapType": "all",
+        "elementType": "labels",
+        "stylers":
+          [{
+            "visibility": "on"
+        }]
+        }`
+    const failedObject = JSON.parse(failedJSON)
+    expect(() => verifyJSON(failedObject)).toThrow('Invalid JSON property')
   })
 })

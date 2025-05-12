@@ -27249,11 +27249,47 @@ var coreExports = requireCore();
 const getMapStyles = () => {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
-    console.log('dir path:', __dirname);
     const mapStylesPath = require$$1$4.resolve(__dirname, './map-style.json');
-    console.log('Map styles path:', mapStylesPath);
     const mapStyles = fs.readFileSync(mapStylesPath, 'utf8');
-    return JSON.parse(mapStyles);
+    console.log('Validating map styles JSON');
+    const mapStylesJSON = JSON.parse(mapStyles);
+    try {
+        verifyJSON(mapStylesJSON);
+    }
+    catch (error) {
+        if (error instanceof TypeError) {
+            coreExports.setFailed(`TypeError: invalid JSON data, check the 'map-style.json.'`);
+        }
+    }
+    if (!Array.isArray(mapStylesJSON)) {
+        return [mapStylesJSON];
+    }
+    return mapStylesJSON;
+};
+const verifyJSON = (data) => {
+    if (Array.isArray(data) && data.length > 0) {
+        data.forEach((item) => {
+            verifyJSON(item);
+        });
+    }
+    else {
+        if ('featureType' in data && 'elementType' in data && 'stylers' in data) {
+            const { stylers } = data;
+            if (!Array.isArray(stylers)) {
+                throw new TypeError('Invalid stylers');
+            }
+            stylers.forEach((styler) => {
+                const key = Object.keys(styler)[0];
+                if (key === 'visibility' &&
+                    !['on', 'off', 'simplified'].includes(styler[key])) {
+                    throw new TypeError('Invalid visibility value');
+                }
+            });
+        }
+        else {
+            throw new TypeError('Invalid JSON property');
+        }
+    }
 };
 const isValidPNG = (image) => {
     const PNG_SIGNATURE = Buffer.from([
@@ -27273,7 +27309,16 @@ const isValidPNG = (image) => {
  */
 async function run() {
     try {
-        const styleTypes = ['visibility', 'saturation', 'lightness', 'gamma'];
+        // const styleTypes = [
+        //   'hue',
+        //   'visibility',
+        //   'saturation',
+        //   'lightness',
+        //   'gamma',
+        //   'color',
+        //   'weight',
+        //   'invert_lightness'
+        // ]
         const mapStyles = getMapStyles();
         const outputPath = coreExports.getInput('output');
         const apiKey = coreExports.getInput('google_static_map_api_key');
@@ -27294,10 +27339,7 @@ async function run() {
             styleString += style.stylers
                 .map((styler) => {
                 const keys = Object.keys(styler);
-                if (keys.length > 0 && styleTypes.includes(keys[0])) {
-                    return `${keys[0]}:${styler[keys[0]]}`;
-                }
-                throw new TypeError('Invalid style object');
+                return `${keys[0]}:${styler[keys[0]]}`;
             })
                 .join('|');
             params.append('style', styleString);
@@ -27316,9 +27358,6 @@ async function run() {
         // Fail the workflow run if an error occurs
         if (error instanceof Error) {
             coreExports.setFailed(error.message);
-        }
-        else if (error instanceof TypeError) {
-            coreExports.setFailed(`TypeError: ${error.message}, you may have provided an invalid property in stylers, check the 'map-style.json.'`);
         }
     }
 }

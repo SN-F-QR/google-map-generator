@@ -43,13 +43,13 @@
         "visibility": "on"
       },
       {
-        "saturation": "-7"
+        "saturation": -7
       },
       {
-        "lightness": "-5"
+        "lightness": -5
       },
       {
-        "gamma": "1.73"
+        "gamma": 1.73
       }
     ]
   },

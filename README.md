@@ -6,8 +6,8 @@
 [![CodeQL](https://github.com/sn-f-qr/google-map-generator/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-This action generates a custom-styled static Google Map image using the Google
-Maps Static API and save it to repository as `.png`.
+This action generates a custom-styled static map image using the Google Maps
+Static API and save it to repository as `.png`.
 
 <img src='./assets/generated-map.png' alt='generated images' width=30% />
 

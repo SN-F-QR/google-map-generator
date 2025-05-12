@@ -8,21 +8,63 @@ type MapStyle = {
   featureType: string
   elementType: string
   stylers: {
-    visibility?: string
-    saturation?: string
-    lightness?: string
-    gamma?: string
+    visibility?: 'on' | 'off' | 'simplified'
+    saturation?: number
+    lightness?: number
+    gamma?: number
+    color?: string
+    weight?: number
+    hue?: string
+    invert_lightness?: boolean
   }[]
 }
 
 const getMapStyles = () => {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = dirname(__filename)
-  console.log('dir path:', __dirname)
   const mapStylesPath = path.resolve(__dirname, './map-style.json')
-  console.log('Map styles path:', mapStylesPath)
   const mapStyles = fs.readFileSync(mapStylesPath, 'utf8')
-  return JSON.parse(mapStyles) as MapStyle[]
+  console.log('Validating map styles JSON')
+  const mapStylesJSON = JSON.parse(mapStyles)
+  try {
+    verifyJSON(mapStylesJSON)
+  } catch (error) {
+    if (error instanceof TypeError) {
+      core.setFailed(
+        `TypeError: invalid JSON data, check the 'map-style.json.'`
+      )
+    }
+  }
+  if (!Array.isArray(mapStylesJSON)) {
+    return [mapStylesJSON] as MapStyle[]
+  }
+  return mapStylesJSON as MapStyle[]
+}
+
+export const verifyJSON = (data: object) => {
+  if (Array.isArray(data) && data.length > 0) {
+    data.forEach((item) => {
+      verifyJSON(item)
+    })
+  } else {
+    if ('featureType' in data && 'elementType' in data && 'stylers' in data) {
+      const { stylers } = data as MapStyle
+      if (!Array.isArray(stylers)) {
+        throw new TypeError('Invalid stylers')
+      }
+      stylers.forEach((styler) => {
+        const key = Object.keys(styler)[0]
+        if (
+          key === 'visibility' &&
+          !['on', 'off', 'simplified'].includes(styler[key]!)
+        ) {
+          throw new TypeError('Invalid visibility value')
+        }
+      })
+    } else {
+      throw new TypeError('Invalid JSON property')
+    }
+  }
 }
 
 const isValidPNG = (image: Buffer<ArrayBuffer>): boolean => {
@@ -48,7 +90,16 @@ const isValidPNG = (image: Buffer<ArrayBuffer>): boolean => {
  */
 export async function run(): Promise<void> {
   try {
-    const styleTypes = ['visibility', 'saturation', 'lightness', 'gamma']
+    // const styleTypes = [
+    //   'hue',
+    //   'visibility',
+    //   'saturation',
+    //   'lightness',
+    //   'gamma',
+    //   'color',
+    //   'weight',
+    //   'invert_lightness'
+    // ]
     const mapStyles = getMapStyles()
 
     const outputPath = core.getInput('output')
@@ -72,10 +123,7 @@ export async function run(): Promise<void> {
       styleString += style.stylers
         .map((styler) => {
           const keys = Object.keys(styler)
-          if (keys.length > 0 && styleTypes.includes(keys[0])) {
-            return `${keys[0]}:${styler[keys[0] as keyof typeof styler]}`
-          }
-          throw new TypeError('Invalid style object')
+          return `${keys[0]}:${styler[keys[0] as keyof typeof styler]}`
         })
         .join('|')
       params.append('style', styleString)
@@ -93,10 +141,6 @@ export async function run(): Promise<void> {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) {
       core.setFailed(error.message)
-    } else if (error instanceof TypeError) {
-      core.setFailed(
-        `TypeError: ${error.message}, you may have provided an invalid property in stylers, check the 'map-style.json.'`
-      )
     }
   }
 }
