@@ -1,4 +1,4 @@
-directory:
-  - "."
-skip-paths:
-  - "node_modules/**"
+skip-path:
+  - node_modules
+  - "**/node_modules/**"
+  - "*/node_modules/*"
