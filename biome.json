@@ -1,7 +1,23 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
   "files": {
-    "ignore": ["dist/**", "coverage/**", "node_modules/**"]
+    "ignoreUnknown": true,
+    "includes": [
+      "src/**/*.{ts,js,json}",
+      "__tests__/**/*.ts",
+      "__fixtures__/**/*.ts",
+      "*.{json,js,ts}",
+      ".github/**/*.yml",
+      "rollup.config.ts",
+      "jest.config.js",
+      "eslint.config.mjs"
+    ]
   },
   "formatter": {
     "enabled": true,
