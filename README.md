@@ -9,7 +9,7 @@
 This action generates a custom-styled static map image using the Google Maps
 Static API and save it to repository as `.png`.
 
-<img src='./assets/generated-map.png' alt='generated images' width=30% />
+![Generated map](./assets/generated-map.png)
 
 It supports:
 
@@ -33,12 +33,12 @@ It supports:
 ### Inputs
 
 1. `google_static_map_api_key`
-2. `address`: the detailed address of the map center; see
+1. `address`: the detailed address of the map center; see
    [Google Maps Static API — Addresses](https://developers.google.com/maps/documentation/maps-static/start#Addresses)
    for validation guidance
-3. `zoom`: The zoom level of the map. Typically ranges from 0 (world view) to
+1. `zoom`: The zoom level of the map. Typically ranges from 0 (world view) to
    20+ (building level).
-4. `output`: output path and filename for the generated map image
+1. `output`: output path and filename for the generated map image
 
 ### Usage Example
 
