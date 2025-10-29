@@ -33,9 +33,9 @@ It supports:
 ### Inputs
 
 1. `google_static_map_api_key`
-2. `address`: the detail address of the map center, check
-   [here](https://developers.google.com/maps/documentation/maps-static/start#Addresses)
-   for validation
+2. `address`: the detailed address of the map center; see
+   [Google Maps Static API — Addresses](https://developers.google.com/maps/documentation/maps-static/start#Addresses)
+   for validation guidance
 3. `zoom`: The zoom level of the map. Typically ranges from 0 (world view) to
    20+ (building level).
 4. `output`: output path and filename for the generated map image

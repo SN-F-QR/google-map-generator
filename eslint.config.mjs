@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+const tsconfigPath = path.join(__dirname, 'tsconfig.eslint.json')
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
@@ -52,8 +53,8 @@ export default [
       sourceType: 'module',
 
       parserOptions: {
-        project: ['tsconfig.eslint.json'],
-        tsconfigRootDir: '.'
+        project: [tsconfigPath],
+        tsconfigRootDir: __dirname
       }
     },
 

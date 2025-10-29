@@ -1,8 +1,8 @@
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 import * as core from '@actions/core'
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 type MapStyle = {
   featureType: string
@@ -54,11 +54,14 @@ export const verifyJSON = (data: object) => {
       }
       stylers.forEach((styler) => {
         const key = Object.keys(styler)[0]
-        if (
-          key === 'visibility' &&
-          !['on', 'off', 'simplified'].includes(styler[key]!)
-        ) {
-          throw new TypeError('Invalid visibility value')
+        if (key === 'visibility') {
+          const value = styler[key]
+          if (typeof value !== 'string') {
+            throw new TypeError('Invalid visibility value')
+          }
+          if (!['on', 'off', 'simplified'].includes(value)) {
+            throw new TypeError('Invalid visibility value')
+          }
         }
       })
     } else {
@@ -107,8 +110,8 @@ export async function run(): Promise<void> {
     const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?'
 
     const address = core.getInput('address')
-    const zoom = parseInt(core.getInput('zoom'))
-    if (isNaN(zoom)) {
+    const zoom = parseInt(core.getInput('zoom'), 10)
+    if (Number.isNaN(zoom)) {
       throw new Error('Invalid zoom level, must be a number')
     }
 

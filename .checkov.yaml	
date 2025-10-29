@@ -1,0 +1,4 @@
+directory:
+  - "."
+skip-paths:
+  - "node_modules/**"

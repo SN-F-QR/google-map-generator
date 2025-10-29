@@ -27,11 +27,13 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         id: setup-node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: npm
@@ -42,11 +44,11 @@ jobs:
 
       - name: Setup Ruby
         id: setup-ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@1d542747a7bad621e02253945b8491142044d3b7 # v1.210.0
         with:
           ruby-version: ruby
 
-      - uses: licensee/setup-licensed@v1.3.2
+      - uses: licensee/setup-licensed@0d52e575b3258417672be0dff2f115d7db8771d8 # v1.3.2
         with:
           version: 4.x
           github_token: ${{ secrets.GITHUB_TOKEN }}

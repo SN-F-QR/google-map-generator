@@ -1,12 +1,13 @@
-import require$$1$3, { fileURLToPath } from 'url';
-import require$$1$4, { dirname } from 'path';
+import { fileURLToPath } from 'node:url';
+import path, { dirname } from 'node:path';
 import require$$0 from 'os';
 import require$$0$1 from 'crypto';
-import fs from 'fs';
+import require$$1 from 'fs';
+import require$$1$4 from 'path';
 import require$$2 from 'http';
 import require$$3 from 'https';
 import require$$0$4 from 'net';
-import require$$1 from 'tls';
+import require$$1$1 from 'tls';
 import require$$4 from 'events';
 import require$$0$3 from 'assert';
 import require$$0$2 from 'util';
@@ -14,19 +15,19 @@ import require$$0$5 from 'stream';
 import require$$7 from 'buffer';
 import require$$8 from 'querystring';
 import require$$14 from 'stream/web';
-import require$$0$7 from 'node:stream';
-import require$$1$1 from 'node:util';
-import require$$0$6 from 'node:events';
-import require$$0$8 from 'worker_threads';
+import { createRequire } from 'node:module';
+import require$$0$6 from 'worker_threads';
 import require$$2$1 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$2 from 'console';
+import require$$1$3 from 'url';
 import require$$3$1 from 'zlib';
 import require$$6 from 'string_decoder';
-import require$$0$9 from 'diagnostics_channel';
+import require$$0$7 from 'diagnostics_channel';
 import require$$2$2 from 'child_process';
 import require$$6$1 from 'timers';
+import fs from 'node:fs';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -222,7 +223,7 @@ function requireFileCommand () {
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const crypto = __importStar(require$$0$1);
-	const fs$1 = __importStar(fs);
+	const fs = __importStar(require$$1);
 	const os = __importStar(require$$0);
 	const utils_1 = requireUtils$1();
 	function issueFileCommand(command, message) {
@@ -230,10 +231,10 @@ function requireFileCommand () {
 	    if (!filePath) {
 	        throw new Error(`Unable to find environment variable for file command ${command}`);
 	    }
-	    if (!fs$1.existsSync(filePath)) {
+	    if (!fs.existsSync(filePath)) {
 	        throw new Error(`Missing file at path: ${filePath}`);
 	    }
-	    fs$1.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
+	    fs.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
 	        encoding: 'utf8'
 	    });
 	}
@@ -372,7 +373,7 @@ var hasRequiredTunnel$1;
 function requireTunnel$1 () {
 	if (hasRequiredTunnel$1) return tunnel$1;
 	hasRequiredTunnel$1 = 1;
-	var tls = require$$1;
+	var tls = require$$1$1;
 	var http = require$$2;
 	var https = require$$3;
 	var events = require$$4;
@@ -1720,6 +1721,15 @@ function requireTimers () {
 
 var main = {exports: {}};
 
+const require$3 = createRequire(import.meta.url);
+function __require$2() { return require$3("node:stream"); }
+
+const require$2 = createRequire(import.meta.url);
+function __require$1() { return require$2("node:util"); }
+
+const require$1 = createRequire(import.meta.url);
+function __require() { return require$1("node:events"); }
+
 var sbmh;
 var hasRequiredSbmh;
 
@@ -1753,8 +1763,8 @@ function requireSbmh () {
 	 * Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
 	 * by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
 	 */
-	const EventEmitter = require$$0$6.EventEmitter;
-	const inherits = require$$1$1.inherits;
+	const EventEmitter = __require().EventEmitter;
+	const inherits = __require$1().inherits;
 
 	function SBMH (needle) {
 	  if (typeof needle === 'string') {
@@ -1963,8 +1973,8 @@ function requirePartStream () {
 	if (hasRequiredPartStream) return PartStream_1;
 	hasRequiredPartStream = 1;
 
-	const inherits = require$$1$1.inherits;
-	const ReadableStream = require$$0$7.Readable;
+	const inherits = __require$1().inherits;
+	const ReadableStream = __require$2().Readable;
 
 	function PartStream (opts) {
 	  ReadableStream.call(this, opts);
@@ -2008,8 +2018,8 @@ function requireHeaderParser () {
 	if (hasRequiredHeaderParser) return HeaderParser_1;
 	hasRequiredHeaderParser = 1;
 
-	const EventEmitter = require$$0$6.EventEmitter;
-	const inherits = require$$1$1.inherits;
+	const EventEmitter = __require().EventEmitter;
+	const inherits = __require$1().inherits;
 	const getLimit = requireGetLimit();
 
 	const StreamSearch = requireSbmh();
@@ -2116,8 +2126,8 @@ function requireDicer () {
 	if (hasRequiredDicer) return Dicer_1;
 	hasRequiredDicer = 1;
 
-	const WritableStream = require$$0$7.Writable;
-	const inherits = require$$1$1.inherits;
+	const WritableStream = __require$2().Writable;
+	const inherits = __require$1().inherits;
 
 	const StreamSearch = requireSbmh();
 
@@ -2693,8 +2703,8 @@ function requireMultipart () {
 	//  * support limits.fieldNameSize
 	//     -- this will require modifications to utils.parseParams
 
-	const { Readable } = require$$0$7;
-	const { inherits } = require$$1$1;
+	const { Readable } = __require$2();
+	const { inherits } = __require$1();
 
 	const Dicer = requireDicer();
 
@@ -3259,8 +3269,8 @@ function requireMain () {
 	if (hasRequiredMain) return main.exports;
 	hasRequiredMain = 1;
 
-	const WritableStream = require$$0$7.Writable;
-	const { inherits } = require$$1$1;
+	const WritableStream = __require$2().Writable;
+	const { inherits } = __require$1();
 	const Dicer = requireDicer();
 
 	const MultipartParser = requireMultipart();
@@ -3352,7 +3362,7 @@ function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
 
-	const { MessageChannel, receiveMessageOnPort } = require$$0$8;
+	const { MessageChannel, receiveMessageOnPort } = require$$0$6;
 
 	const corsSafeListedMethods = ['GET', 'HEAD', 'POST'];
 	const corsSafeListedMethodsSet = new Set(corsSafeListedMethods);
@@ -8084,7 +8094,7 @@ function requireConnect () {
 	    let socket;
 	    if (protocol === 'https:') {
 	      if (!tls) {
-	        tls = require$$1;
+	        tls = require$$1$1;
 	      }
 	      servername = servername || options.servername || util.getServerName(host) || null;
 
@@ -11492,6 +11502,20 @@ function requirePool () {
 	      ? { ...options.interceptors }
 	      : undefined;
 	    this[kFactory] = factory;
+
+	    this.on('connectionError', (origin, targets, error) => {
+	      // If a connection error occurs, we remove the client from the pool,
+	      // and emit a connectionError event. They will not be re-used.
+	      // Fixes https://github.com/nodejs/undici/issues/3895
+	      for (const target of targets) {
+	        // Do not use kRemoveClient here, as it will close the client,
+	        // but the client cannot be closed in this state.
+	        const idx = this[kClients].indexOf(target);
+	        if (idx !== -1) {
+	          this[kClients].splice(idx, 1);
+	        }
+	      }
+	    });
 	  }
 
 	  [kGetDispatcher] () {
@@ -14953,6 +14977,7 @@ function requireHeaders () {
 	  isValidHeaderName,
 	  isValidHeaderValue
 	} = requireUtil$5();
+	const util = require$$0$2;
 	const { webidl } = requireWebidl();
 	const assert = require$$0$3;
 
@@ -15499,6 +15524,9 @@ function requireHeaders () {
 	  [Symbol.toStringTag]: {
 	    value: 'Headers',
 	    configurable: true
+	  },
+	  [util.inspect.custom]: {
+	    enumerable: false
 	  }
 	});
 
@@ -21388,9 +21416,10 @@ function requireUtil$1 () {
 	if (hasRequiredUtil$1) return util$1;
 	hasRequiredUtil$1 = 1;
 
-	const assert = require$$0$3;
-	const { kHeadersList } = requireSymbols$4();
-
+	/**
+	 * @param {string} value
+	 * @returns {boolean}
+	 */
 	function isCTLExcludingHtab (value) {
 	  if (value.length === 0) {
 	    return false
@@ -21651,31 +21680,13 @@ function requireUtil$1 () {
 	  return out.join('; ')
 	}
 
-	let kHeadersListNode;
-
-	function getHeadersList (headers) {
-	  if (headers[kHeadersList]) {
-	    return headers[kHeadersList]
-	  }
-
-	  if (!kHeadersListNode) {
-	    kHeadersListNode = Object.getOwnPropertySymbols(headers).find(
-	      (symbol) => symbol.description === 'headers list'
-	    );
-
-	    assert(kHeadersListNode, 'Headers cannot be parsed');
-	  }
-
-	  const headersList = headers[kHeadersListNode];
-	  assert(headersList);
-
-	  return headersList
-	}
-
 	util$1 = {
 	  isCTLExcludingHtab,
-	  stringify,
-	  getHeadersList
+	  validateCookieName,
+	  validateCookiePath,
+	  validateCookieValue,
+	  toIMFDate,
+	  stringify
 	};
 	return util$1;
 }
@@ -22013,7 +22024,7 @@ function requireCookies () {
 	hasRequiredCookies = 1;
 
 	const { parseSetCookie } = requireParse();
-	const { stringify, getHeadersList } = requireUtil$1();
+	const { stringify } = requireUtil$1();
 	const { webidl } = requireWebidl();
 	const { Headers } = requireHeaders();
 
@@ -22089,14 +22100,13 @@ function requireCookies () {
 
 	  webidl.brandCheck(headers, Headers, { strict: false });
 
-	  const cookies = getHeadersList(headers).cookies;
+	  const cookies = headers.getSetCookie();
 
 	  if (!cookies) {
 	    return []
 	  }
 
-	  // In older versions of undici, cookies is a list of name:value.
-	  return cookies.map((pair) => parseSetCookie(Array.isArray(pair) ? pair[1] : pair))
+	  return cookies.map((pair) => parseSetCookie(pair))
 	}
 
 	/**
@@ -22285,7 +22295,7 @@ function requireEvents () {
 
 	const { webidl } = requireWebidl();
 	const { kEnumerableProperty } = requireUtil$6();
-	const { MessagePort } = require$$0$8;
+	const { MessagePort } = require$$0$6;
 
 	/**
 	 * @see https://html.spec.whatwg.org/multipage/comms.html#messageevent
@@ -22802,7 +22812,7 @@ function requireConnection () {
 	if (hasRequiredConnection) return connection;
 	hasRequiredConnection = 1;
 
-	const diagnosticsChannel = require$$0$9;
+	const diagnosticsChannel = require$$0$7;
 	const { uid, states } = requireConstants();
 	const {
 	  kReadyState,
@@ -23183,7 +23193,7 @@ function requireReceiver () {
 	hasRequiredReceiver = 1;
 
 	const { Writable } = require$$0$5;
-	const diagnosticsChannel = require$$0$9;
+	const diagnosticsChannel = require$$0$7;
 	const { parserStates, opcodes, states, emptyBuffer } = requireConstants();
 	const { kReadyState, kSentClose, kResponse, kReceivedClose } = requireSymbols();
 	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil();
@@ -25200,7 +25210,7 @@ function requireSummary () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
 		const os_1 = require$$0;
-		const fs_1 = fs;
+		const fs_1 = require$$1;
 		const { access, appendFile, writeFile } = fs_1.promises;
 		exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 		exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
@@ -25592,16 +25602,16 @@ function requireIoUtil () {
 		var _a;
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-		const fs$1 = __importStar(fs);
+		const fs = __importStar(require$$1);
 		const path = __importStar(require$$1$4);
-		_a = fs$1.promises
+		_a = fs.promises
 		// export const {open} = 'fs'
 		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
 		// export const {open} = 'fs'
 		exports.IS_WINDOWS = process.platform === 'win32';
 		// See https://github.com/nodejs/node/blob/d0153aee367422d0858105abec186da4dff0a0c5/deps/uv/include/uv/win.h#L691
 		exports.UV_FS_O_EXLOCK = 0x10000000;
-		exports.READONLY = fs$1.constants.O_RDONLY;
+		exports.READONLY = fs.constants.O_RDONLY;
 		function exists(fsPath) {
 		    return __awaiter(this, void 0, void 0, function* () {
 		        try {
@@ -27249,7 +27259,7 @@ var coreExports = requireCore();
 const getMapStyles = () => {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
-    const mapStylesPath = require$$1$4.resolve(__dirname, './map-style.json');
+    const mapStylesPath = path.resolve(__dirname, './map-style.json');
     const mapStyles = fs.readFileSync(mapStylesPath, 'utf8');
     console.log('Validating map styles JSON');
     const mapStylesJSON = JSON.parse(mapStyles);
@@ -27280,9 +27290,14 @@ const verifyJSON = (data) => {
             }
             stylers.forEach((styler) => {
                 const key = Object.keys(styler)[0];
-                if (key === 'visibility' &&
-                    !['on', 'off', 'simplified'].includes(styler[key])) {
-                    throw new TypeError('Invalid visibility value');
+                if (key === 'visibility') {
+                    const value = styler[key];
+                    if (typeof value !== 'string') {
+                        throw new TypeError('Invalid visibility value');
+                    }
+                    if (!['on', 'off', 'simplified'].includes(value)) {
+                        throw new TypeError('Invalid visibility value');
+                    }
                 }
             });
         }
@@ -27324,8 +27339,8 @@ async function run() {
         const apiKey = coreExports.getInput('google_static_map_api_key');
         const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?';
         const address = coreExports.getInput('address');
-        const zoom = parseInt(coreExports.getInput('zoom'));
-        if (isNaN(zoom)) {
+        const zoom = parseInt(coreExports.getInput('zoom'), 10);
+        if (Number.isNaN(zoom)) {
             throw new Error('Invalid zoom level, must be a number');
         }
         const params = new URLSearchParams();
@@ -27351,7 +27366,7 @@ async function run() {
         if (!isValidPNG(buffer)) {
             throw new Error('Invalid PNG image');
         }
-        fs.mkdirSync(require$$1$4.dirname(outputPath), { recursive: true });
+        fs.mkdirSync(path.dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, buffer);
     }
     catch (error) {
